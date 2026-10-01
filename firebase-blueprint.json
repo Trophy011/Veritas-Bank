@@ -1,0 +1,113 @@
+{
+  "entities": {
+    "User": {
+      "title": "User",
+      "description": "Customer and administrator profiles for Veritas Online Banking",
+      "type": "object",
+      "properties": {
+        "uid": { "type": "string" },
+        "email": { "type": "string", "format": "email" },
+        "fullName": { "type": "string" },
+        "phone": { "type": "string" },
+        "address": { "type": "string" },
+        "role": { "type": "string", "enum": ["customer", "admin"] },
+        "checkingAccountNumber": { "type": "string" },
+        "savingsAccountNumber": { "type": "string" },
+        "cardAccountNumber": { "type": "string" },
+        "checkingBalance": { "type": "number" },
+        "savingsBalance": { "type": "number" },
+        "cardBalance": { "type": "number" },
+        "cardLimit": { "type": "number" },
+        "transactionPin": { "type": "string", "maxLength": 6 },
+        "isLocked": { "type": "boolean" },
+        "isTransferRestricted": { "type": "boolean" },
+        "warningMessage": { "type": "string" },
+        "warningLevel": { "type": "string", "enum": ["none", "info", "warning", "critical"] },
+        "creditScore": { "type": "number" },
+        "cashRewards": { "type": "number" },
+        "createdAt": { "type": "string" },
+        "updatedAt": { "type": "string" }
+      },
+      "required": ["uid", "email", "role"]
+    },
+    "Transaction": {
+      "title": "Transaction",
+      "description": "Internal and international fund transfers, funding, and reversals",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string" },
+        "senderUid": { "type": "string" },
+        "senderName": { "type": "string" },
+        "senderAccount": { "type": "string" },
+        "recipientUid": { "type": "string" },
+        "recipientName": { "type": "string" },
+        "recipientAccount": { "type": "string" },
+        "recipientBank": { "type": "string" },
+        "recipientCountry": { "type": "string" },
+        "type": { "type": "string", "enum": ["internal", "international", "deposit", "admin_fund", "reversal"] },
+        "amount": { "type": "number" },
+        "currency": { "type": "string" },
+        "convertedAmount": { "type": "number" },
+        "exchangeRate": { "type": "number" },
+        "status": { "type": "string", "enum": ["completed", "reversed", "pending", "flagged"] },
+        "memo": { "type": "string" },
+        "reference": { "type": "string" },
+        "pinVerified": { "type": "boolean" },
+        "createdAt": { "type": "string" },
+        "reversedAt": { "type": "string" },
+        "reversedBy": { "type": "string" }
+      },
+      "required": ["id", "senderUid", "type", "amount", "status", "reference"]
+    },
+    "ChatMessage": {
+      "title": "ChatMessage",
+      "description": "Live support chat message with image and document attachment support",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string" },
+        "conversationId": { "type": "string" },
+        "customerUid": { "type": "string" },
+        "customerName": { "type": "string" },
+        "senderType": { "type": "string", "enum": ["customer", "admin", "system"] },
+        "senderName": { "type": "string" },
+        "text": { "type": "string" },
+        "read": { "type": "boolean" },
+        "createdAt": { "type": "string" }
+      },
+      "required": ["id", "conversationId", "senderType", "text"]
+    },
+    "AdminLog": {
+      "title": "AdminLog",
+      "description": "Audit trails for banking operator interventions and AI commands",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string" },
+        "adminEmail": { "type": "string" },
+        "action": { "type": "string" },
+        "targetUid": { "type": "string" },
+        "targetUser": { "type": "string" },
+        "details": { "type": "string" },
+        "createdAt": { "type": "string" }
+      },
+      "required": ["id", "adminEmail", "action", "details"]
+    }
+  },
+  "firestore": {
+    "/users/{userId}": {
+      "schema": "User",
+      "description": "Stores individual user and admin accounts"
+    },
+    "/transactions/{transactionId}": {
+      "schema": "Transaction",
+      "description": "Stores banking transaction history and reversal records"
+    },
+    "/chat_messages/{messageId}": {
+      "schema": "ChatMessage",
+      "description": "Stores live customer support conversations and attachments"
+    },
+    "/admin_logs/{logId}": {
+      "schema": "AdminLog",
+      "description": "Stores operator and AI system execution logs"
+    }
+  }
+}

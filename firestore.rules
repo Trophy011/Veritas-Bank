@@ -1,0 +1,62 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+    // Default-deny catch-all
+    match /{document=**} {
+      allow read, write: if false;
+    }
+
+    // Health check test doc
+    match /test/{docId} {
+      allow read, write: if true;
+    }
+
+    // Users Collection
+    match /users/{userId} {
+      allow read: if request.auth != null && (request.auth.uid == userId || request.auth.token.email == 'managementofficails001@gmail.com');
+      allow create: if request.auth != null;
+      allow update: if request.auth != null && (request.auth.uid == userId || request.auth.token.email == 'managementofficails001@gmail.com');
+      allow delete: if request.auth != null && request.auth.token.email == 'managementofficails001@gmail.com';
+    }
+
+    // Transactions Collection
+    match /transactions/{transactionId} {
+      allow read: if request.auth != null && (
+        resource.data.senderUid == request.auth.uid || 
+        resource.data.recipientUid == request.auth.uid ||
+        request.auth.token.email == 'managementofficails001@gmail.com'
+      );
+      allow create: if request.auth != null && (
+        request.resource.data.senderUid == request.auth.uid ||
+        request.auth.token.email == 'managementofficails001@gmail.com'
+      );
+      allow update: if request.auth != null && (
+        request.auth.token.email == 'managementofficails001@gmail.com' ||
+        resource.data.recipientUid == request.auth.uid
+      );
+      allow delete: if request.auth != null && request.auth.token.email == 'managementofficails001@gmail.com';
+    }
+
+    // Live Support Chat Messages
+    match /chat_messages/{messageId} {
+      allow read: if request.auth != null && (
+        resource.data.customerUid == request.auth.uid ||
+        request.auth.token.email == 'managementofficails001@gmail.com'
+      );
+      allow create: if request.auth != null && (
+        request.resource.data.customerUid == request.auth.uid ||
+        request.auth.token.email == 'managementofficails001@gmail.com'
+      );
+      allow update: if request.auth != null && (
+        resource.data.customerUid == request.auth.uid ||
+        request.auth.token.email == 'managementofficails001@gmail.com'
+      );
+      allow delete: if request.auth != null && request.auth.token.email == 'managementofficails001@gmail.com';
+    }
+
+    // Admin Logs
+    match /admin_logs/{logId} {
+      allow read, write: if request.auth != null && request.auth.token.email == 'managementofficails001@gmail.com';
+    }
+  }
+}
